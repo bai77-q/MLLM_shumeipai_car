@@ -102,6 +102,11 @@ if __name__ == '__main__':
         # 输入指令
         order = input('请输入指令')
 
+        # 开启摄像头
+        ip_address = "192.168.1.100"  # 替换为实际摄像头的IP地址
+        port_number = 8080  # 替换为实际摄像头的端口号
+        cap = open_camera(ip_address, port_number)
+
         # 智能体Agent编排动作
         agent_plan_output = eval(agent_plan(order))
 
