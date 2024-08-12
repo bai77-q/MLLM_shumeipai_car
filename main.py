@@ -2,7 +2,7 @@ from car_actions import *  # 导入car_actions.py中的所有函数
 from camera import *  # 导入camera.py中的所有函数
 # from voice_recognition import *  # 导入voice_recognition.py中的所有函数
 from utils_llmPrompts import *  # 导入nlp_processing.py中的所有函数
-# from multimodal import *  # 导入multimodal_processing.py中的所有函数
+from multimodal import *  # 导入multimodal_processing.py中的所有函数
 from utils_llm import *
 # from utils_tts import *
 
@@ -18,9 +18,12 @@ def agent_play():
     while True:
         # 输入指令
         order = input('请输入指令')
+        # 智能体Agent编排动作。多模态大模型
+        agent_plan_output = eval(Multiagent_plan(order))
 
-        # 智能体Agent编排动作
-        agent_plan_output = eval(agent_plan(order))
+
+        # 智能体Agent编排动作。普通大模型
+        # agent_plan_output = eval(agent_plan(order))
 
         print('智能体编排动作如下\n', agent_plan_output)
 

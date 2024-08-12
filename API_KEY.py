@@ -1,10 +1,10 @@
 # API_KEY.py
 
-# 零一万物大模型开放平台
+# 零一万物大模型开放平台：基础指令的大模型
 # https://platform.lingyiwanwu.com
 YI_KEY = "013565e5b3154a8cb5f91e7113dbc04a"
 
-# 百度智能云千帆ModelBuilder
+# 百度智能云千帆ModelBuilder：用来做语音识别语音转换的
 # https://qianfan.cloud.baidu.com
 QIANFAN_ACCESS_KEY = "ALTAKRELRxSXXXXXXXXXX"
 QIANFAN_SECRET_KEY = "3737d9da82de4f2XXXXXXXXXX"

@@ -48,35 +48,46 @@ def init():
     global pwm_ENA, pwm_ENB, pwm_FrontServo, pwm_UpDownServo, pwm_LeftRightServo
     global pwm_rled, pwm_gled, pwm_bled
 
-    # 电机控制引脚初始化
-    if 'pwm_ENA' not in globals() or pwm_ENA is None:
-        pwm_ENA = GPIO.PWM(ENA, 2000)
-        pwm_ENA.start(0)
-    if 'pwm_ENB' not in globals() or pwm_ENB is None:
-        pwm_ENB = GPIO.PWM(ENB, 2000)
-        pwm_ENB.start(0)
+    # 设置电机控制引脚为输出模式
+    GPIO.setup(ENA, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(IN1, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(IN2, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(ENB, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(IN3, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(IN4, GPIO.OUT, initial=GPIO.LOW)
 
-    # 舵机控制引脚初始化
-    if 'pwm_FrontServo' not in globals() or pwm_FrontServo is None:
-        pwm_FrontServo = GPIO.PWM(FrontServoPin, 50)
-        pwm_FrontServo.start(0)
-    if 'pwm_UpDownServo' not in globals() or pwm_UpDownServo is None:
-        pwm_UpDownServo = GPIO.PWM(ServoUpDownPin, 50)
-        pwm_UpDownServo.start(0)
-    if 'pwm_LeftRightServo' not in globals() or pwm_LeftRightServo is None:
-        pwm_LeftRightServo = GPIO.PWM(ServoLeftRightPin, 50)
-        pwm_LeftRightServo.start(0)
+    # 设置舵机引脚为输出模式
+    GPIO.setup(FrontServoPin, GPIO.OUT)
+    GPIO.setup(ServoUpDownPin, GPIO.OUT)
+    GPIO.setup(ServoLeftRightPin, GPIO.OUT)
 
-    # RGB LED控制引脚初始化
-    if 'pwm_rled' not in globals() or pwm_rled is None:
-        pwm_rled = GPIO.PWM(LED_R, 1000)
-        pwm_rled.start(0)
-    if 'pwm_gled' not in globals() or pwm_gled is None:
-        pwm_gled = GPIO.PWM(LED_G, 1000)
-        pwm_gled.start(0)
-    if 'pwm_bled' not in globals() or pwm_bled is None:
-        pwm_bled = GPIO.PWM(LED_B, 1000)
-        pwm_bled.start(0)
+    # 设置RGB LED引脚为输出模式
+    GPIO.setup(LED_R, GPIO.OUT)
+    GPIO.setup(LED_G, GPIO.OUT)
+    GPIO.setup(LED_B, GPIO.OUT)
+
+    # 设置蜂鸣器引脚为输出模式
+    GPIO.setup(buzzer, GPIO.OUT)
+
+    # 初始化PWM对象，确保在GPIO引脚设置为输出模式后创建
+    pwm_ENA = GPIO.PWM(ENA, 2000)
+    pwm_ENB = GPIO.PWM(ENB, 2000)
+    pwm_ENA.start(0)
+    pwm_ENB.start(0)
+
+    pwm_FrontServo = GPIO.PWM(FrontServoPin, 50)
+    pwm_UpDownServo = GPIO.PWM(ServoUpDownPin, 50)
+    pwm_LeftRightServo = GPIO.PWM(ServoLeftRightPin, 50)
+    pwm_FrontServo.start(0)
+    pwm_UpDownServo.start(0)
+    pwm_LeftRightServo.start(0)
+
+    pwm_rled = GPIO.PWM(LED_R, 1000)
+    pwm_gled = GPIO.PWM(LED_G, 1000)
+    pwm_bled = GPIO.PWM(LED_B, 1000)
+    pwm_rled.start(0)
+    pwm_gled.start(0)
+    pwm_bled.start(0)
 
     # 设置超声波测距引脚
     GPIO.setup(TrigPin, GPIO.OUT)
@@ -84,84 +95,77 @@ def init():
 
     print("Initialization complete")
 
-
-
-def set_motor_state(IN1_state, IN2_state, IN3_state, IN4_state, speed=80):
-
-    """
-    设置电机状态和速度
-    :param IN1_state: 电机1正向引脚状态（GPIO.HIGH/LOW）
-    :param IN2_state: 电机1反向引脚状态（GPIO.HIGH/LOW）
-    :param IN3_state: 电机2正向引脚状态（GPIO.HIGH/LOW）
-    :param IN4_state: 电机2反向引脚状态（GPIO.HIGH/LOW）
-    :param speed: PWM占空比，用于控制电机速度
-    """
-    GPIO.output(IN1, IN1_state)
-    GPIO.output(IN2, IN2_state)
-    GPIO.output(IN3, IN3_state)
-    GPIO.output(IN4, IN4_state)
+def run(speed=80):
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
     pwm_ENA.ChangeDutyCycle(speed)
     pwm_ENB.ChangeDutyCycle(speed)
 
 
-def run(speed=80):
-    """
-    小车前进
-    :param speed: PWM占空比，用于控制电机速度
-    """
-    set_motor_state(GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.LOW, speed)
-
-
 def back(speed=80):
-    """
-    小车后退
-    :param speed: PWM占空比，用于控制电机速度
-    """
-    set_motor_state(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, speed)
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+    pwm_ENA.ChangeDutyCycle(speed)
+    pwm_ENB.ChangeDutyCycle(speed)
 
 
 def left(speed=80):
-    """
-    小车左转
-    :param speed: PWM占空比，用于控制电机速度
-    """
-    set_motor_state(GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.LOW, speed)
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
+    pwm_ENA.ChangeDutyCycle(speed)
+    pwm_ENB.ChangeDutyCycle(speed)
 
 
 def right(speed=80):
-    """
-    小车右转
-    :param speed: PWM占空比，用于控制电机速度
-    """
-    set_motor_state(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.LOW, speed)
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.LOW)
+    pwm_ENA.ChangeDutyCycle(speed)
+    pwm_ENB.ChangeDutyCycle(speed)
 
 
 def brake():
-    """
-    小车刹车（停止）
-    """
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
 
 
-def servo_appointed_detection(pwm=None, pos=90):
+def LeftRightServo_appointed_detection(pos=90):
+    """
+    控制舵机旋转到指定位置
+    :param pos: 目标位置角度（0-180度）
+    """
+
+    if 0 <= pos <= 180:  # 检查角度范围
+        for i in range(18):
+            pwm_LeftRightServo.ChangeDutyCycle(2.5 + 10 * pos / 180)
+            time.sleep(0.02)
+        pwm_LeftRightServo.ChangeDutyCycle(0)  # 固定当前位置
+    else:
+        logging.warning(f"Invalid servo position: {pos}. Must be between 0 and 180 degrees.")
+
+def UpDownServo_appointed_detection(pos=90):
     """
     控制舵机旋转到指定位置
     :param pwm: 舵机对应的PWM对象。如果未提供，则使用默认的pwm_LeftRightServo。
     :param pos: 目标位置角度（0-180度）
     """
-    if pwm is None:
-        pwm = pwm_LeftRightServo  # 使用默认的PWM对象
 
     if 0 <= pos <= 180:  # 检查角度范围
-        pwm.ChangeDutyCycle(2.5 + 10 * pos / 180)
-        time.sleep(0.02)
-        pwm.ChangeDutyCycle(0)  # 固定当前位置
+        for i in range(18):
+            pwm_UpDownServo.ChangeDutyCycle(2.5 + 10 * pos / 180)
+            time.sleep(0.02)
+        pwm_UpDownServo.ChangeDutyCycle(0)  # 固定当前位置
     else:
         logging.warning(f"Invalid servo position: {pos}. Must be between 0 and 180 degrees.")
-
 
 
 def frontservo_appointed_detection(pos):

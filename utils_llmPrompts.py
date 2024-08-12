@@ -19,11 +19,11 @@ AGENT_SYS_PROMPT = '''
   - 参数：`speed`（可选） - 控制小车右转的速度，占空比（0-100%）。
 - 小车刹车：`brake()` 
   - 无参数 - 停止小车运动。
-- 设置摄像头舵机到指定位置：`servo_appointed_detection(pwm, pos)` 
-  - 参数：
-    - `pwm` - 对应的 PWM 对象。可能的值：`pwm_UpDownServo`（摄像头上下舵机）和 `pwm_LeftRightServo`（摄像头左右舵机）。（如果没有特别声明，默认调用pwm_LeftRightServo）
-    - `pos` - 舵机的目标位置（0-180度）。
-- 设置前舵机到指定位置：`frontservo_appointed_detection(pos)` 
+- 设置摄像头左右舵机到指定位置：LeftRightServo_appointed_detection(pos=90)。
+  - 参数：`pos` - 舵机的目标位置（0-180度）。
+- 设置摄像头上下舵机到指定位置：UpDownServo_appointed_detection(pos=90)。
+  - 参数：`pos` - 舵机的目标位置（0-180度）。   
+- 设置前舵机（前舵机用于超声测距方向的确定）到指定位置：`frontservo_appointed_detection(pos)` 
   - 参数：`pos` - 前舵机的目标位置（0-180度）。
 - 测量超声波距离：`Distance_test()` 
   - 无参数 - 测量距离并打印结果。
@@ -50,10 +50,10 @@ AGENT_SYS_PROMPT = '''
 我的指令：打开摄像头，开始录制视频。你输出：{'function':['start_video_stream()'], 'response':'开启视界，记录美好瞬间'}
 我的指令：设置前舵机到90度位置。你输出：{'function':['frontservo_appointed_detection(90)'], 'response':'舵机转动，定格在90度'}
 我的指令：停止视频录制线程。你输出：{'function':['stop_video_stream()'], 'response':'记录完成'}
-我的指令：前进2秒后刹车，接着设置摄像头上下舵机到120度位置，最后亮红灯。你输出：`{'function':['run()', 'time.sleep(2)', 'brake()', 'servo_appointed_detection(pwm_UpDownServo, 120)', 'color_led_pwm(255, 0, 0)'], 'response':'小车前进2秒并停下，摄像头已调整到120度，红灯闪烁'}`
+我的指令：前进2秒后刹车，接着设置摄像头上下舵机到120度位置，最后亮红灯。你输出：`{'function':['run()', 'time.sleep(2)', 'brake()', 'UpDownServo_appointed_detection(120)', 'color_led_pwm(255, 0, 0)'], 'response':'小车前进2秒并停下，摄像头已调整到120度，红灯闪烁'}`
 我的指令：启动摄像头视频录制，前进1秒，然后右转，最后停止视频录制。 你输出：`{'function':['start_video_stream()', 'run()', 'time.sleep(1)', 'right()', 'stop_video_stream()'], 'response':'开始录制视频，小车前进并右转，录制完成'}`
 我的指令：测量距离，如果距离小于20cm，则蜂鸣器发声并停止小车。你输出：`{'function':['Distance_test()', 'if (distance < 20): whistle()', 'brake()'], 'response':'距离小于20cm，警告声响起，小车已停止'}`
-我的指令：设置摄像头到60度位置，同时启动视频录制，再前进3秒。你输出：`{'function':['servo_appointed_detection(pwm_LeftRightServo, 60)', 'start_video_stream()', 'run()', 'time.sleep(3)'], 'response':'摄像头已调整到60度，视频录制中，小车前进3秒'}`
+我的指令：设置摄像头到60度位置，同时启动视频录制，再前进3秒。你输出：`{'function':['LeftRightServo_appointed_detection(60)', 'start_video_stream()', 'run()', 'time.sleep(3)'], 'response':'摄像头已调整到60度，视频录制中，小车前进3秒'}`
   
 【一些互联网热梗和名场面】
 路见不平，拔刀相助

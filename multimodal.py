@@ -68,37 +68,43 @@ def call_openai_api(image_base64, prompt):
             time.sleep(5)
     return None  # 如果重试3次仍失败，返回None
 
-previous_frame = None
+def Multiagent_plan(order='帮我找到大门'):
+    '''
+    根据输入的指令生成多模态大模型的动作计划，并调用 OpenAI API。
+    '''
+    # 将输入指令作为PROMPT
+    prompt = order
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("无法读取帧")
-        break
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("无法读取帧")
+            break
 
-    # 显示当前帧
-    cv2.imshow('Output', frame)
+        # 显示当前帧
+        cv2.imshow('Output', frame)
 
-    # 每5秒截取一次图片
-    if time.time() - start_time >= 5:
-        # 重置开始时间
-        start_time = time.time()
+        # 每5秒截取一次图片
+        if time.time() - start_time >= 5:
+            # 重置开始时间
+            start_time = time.time()
 
-        # 将当前帧编码为JPEG格式并存入内存
-        _, buffer = cv2.imencode('.jpg', frame)
-        image_base64 = base64.b64encode(buffer).decode('utf-8')
+            # 将当前帧编码为JPEG格式并存入内存
+            _, buffer = cv2.imencode('.jpg', frame)
+            image_base64 = base64.b64encode(buffer).decode('utf-8')
 
-        # 调用API
-        result = call_openai_api(image_base64, PROMPT)
-        if result:
-            print(result)
-        else:
-            print("API调用失败")
+            # 调用API
+            result = call_openai_api(image_base64, prompt)
+            if result:
+                print(result)
+                return result  # 返回结果以便进一步处理
+            else:
+                print("API调用失败")
 
-    # 如果按下'q'键则退出
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        # 如果按下'q'键则退出
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-# 释放捕获对象，并关闭所有OpenCV窗口
-cap.release()
-cv2.destroyAllWindows()
+    # 释放捕获对象，并关闭所有OpenCV窗口
+    cap.release()
+    cv2.destroyAllWindows()
