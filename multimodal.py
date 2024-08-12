@@ -4,22 +4,6 @@ import time
 import openai
 import requests
 
-from car_actions import LeftRightServo_appointed_detection
-
-# IP摄像头的IP地址和端口号
-ip_address = '192.168.50.1'
-port_number = 8080
-
-# 打开视频流
-cap = cv2.VideoCapture(f'http://{ip_address}:{port_number}/?action=stream')
-
-if not cap.isOpened():
-    print("无法打开摄像头")
-    exit()
-
-# 初始化时间
-start_time = time.time()
-
 # OpenAI API设置
 openai.api_base = "https://api.lingyiwanwu.com/v1"
 openai.api_key = "013565e5b3154a8cb5f91e7113dbc04a"
