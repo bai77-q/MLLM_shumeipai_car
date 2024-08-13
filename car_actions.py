@@ -9,10 +9,10 @@ import logging
 # 配置日志，设置日志等级为INFO，格式为时间戳、日志等级和消息内容
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# 初始化上下左右舵机的角度为90度
-ServoLeftRightPos = 90
-ServoUpDownPos = 90
-g_frontServoPos = 90
+# 初始化上下左右舵机的角度为正前方
+ServoLeftRightPos = 20
+ServoUpDownPos = 65
+g_frontServoPos = 80
 
 # GPIO引脚定义，用于控制电机、舵机、LED、蜂鸣器等
 IN1 = 20
@@ -95,7 +95,7 @@ def init():
 
     print("Initialization complete")
 
-def run(speed=80):
+def run(speed=30):
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
@@ -104,7 +104,7 @@ def run(speed=80):
     pwm_ENB.ChangeDutyCycle(speed)
 
 
-def back(speed=80):
+def back(speed=30):
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.LOW)
@@ -113,7 +113,7 @@ def back(speed=80):
     pwm_ENB.ChangeDutyCycle(speed)
 
 
-def left(speed=80):
+def left(speed=30):
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
@@ -122,7 +122,7 @@ def left(speed=80):
     pwm_ENB.ChangeDutyCycle(speed)
 
 
-def right(speed=80):
+def right(speed=30):
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
@@ -138,13 +138,13 @@ def brake():
     GPIO.output(IN4, GPIO.LOW)
 
 
-def LeftRightServo_appointed_detection(pos=90):
+def LeftRightServo_appointed_detection(pos=20):
     """
     控制舵机旋转到指定位置
     :param pos: 目标位置角度（0-180度）
     """
 
-    if 0 <= pos <= 180:  # 检查角度范围
+    if -10 <= pos <= 180:  # 检查角度范围
         for i in range(18):
             pwm_LeftRightServo.ChangeDutyCycle(2.5 + 10 * pos / 180)
             time.sleep(0.02)
@@ -152,7 +152,7 @@ def LeftRightServo_appointed_detection(pos=90):
     else:
         logging.warning(f"Invalid servo position: {pos}. Must be between 0 and 180 degrees.")
 
-def UpDownServo_appointed_detection(pos=90):
+def UpDownServo_appointed_detection(pos=65):
     """
     控制舵机旋转到指定位置
     :param pwm: 舵机对应的PWM对象。如果未提供，则使用默认的pwm_LeftRightServo。
@@ -168,7 +168,7 @@ def UpDownServo_appointed_detection(pos=90):
         logging.warning(f"Invalid servo position: {pos}. Must be between 0 and 180 degrees.")
 
 
-def frontservo_appointed_detection(pos):
+def frontservo_appointed_detection(pos=80):
     # pwm_FrontServo = GPIO.PWM(FrontServoPin, 50)
     # pwm_FrontServo.start(0)
     """
@@ -186,18 +186,25 @@ def frontservo_appointed_detection(pos):
 
 def Distance_test():
     """
-    测量距离并打印结果
+    测量距离并返回结果（单位：cm）
     """
     GPIO.output(TrigPin, GPIO.HIGH)
     time.sleep(0.000015)
     GPIO.output(TrigPin, GPIO.LOW)
+
     while not GPIO.input(EchoPin):
         pass
     t1 = time.time()
+
     while GPIO.input(EchoPin):
         pass
     t2 = time.time()
-    print("Distance is %d cm" % (((t2 - t1) * 340 / 2) * 100))
+
+    # 计算距离 (单位：cm)
+    distance = ((t2 - t1) * 340 / 2) * 100
+
+    print("Distance is %d cm" % distance)
+    return distance
 
 
 def color_led_pwm(iRed, iGreen, iBlue):
@@ -288,6 +295,7 @@ def stop_video_stream():
         if video_thread is not None:
             video_thread.join()
         logging.info("Video streaming stopped.")
+
 
 
 # 主函数，初始化系统并控制小车的动作
